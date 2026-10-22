@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from sklearn.linear_model import LinearRegression, QuantileRegressor, 
+from sklearn.linear_model import LinearRegression, QuantileRegressor 
 
 
 class Method(ABC):
