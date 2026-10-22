@@ -6,38 +6,28 @@ import numpy as np
 
 
 class RegressionDGP(ABC):
-    """Gaussian predictors, fixed beta, and an interchangeable error law.
+    """Gaussian predictors with varying number of features, fixed beta, 
+    fixed noise distribution
+
 
     Parameters satisfy 0 < p < n and 0 <= rho < 1. generate() takes a
     NumPy Generator and returns X, y, beta_true, covariance in a dictionary.
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
 
-    def __init__(self, n, p, rho):
-        self.n, self.p, self.rho = n, p, rho
-        index = np.arange(p)
-        self.covariance = rho ** np.abs(index[:, None] - index[None, :])
-        self.beta = np.ones(p) / np.sqrt(p)
-        self.factor = np.linalg.cholesky(self.covariance)
-
+    def __init__(self, n, gamma, r2):
+        self.n,  self.r2 = n, r2
+        self.p = np.round(gamma*n)
+        self.beta = np.sqrt(r2/self.p)*np.ones(self.p)
+           
     @abstractmethod
-    def errors(self, rng):
-        """Return n independent errors with mean zero and variance one."""
-
     def generate(self, rng):
-        X = rng.normal(size=(self.n, self.p)) @ self.factor.T
-        return {"X": X, "y": X @ self.beta + self.errors(rng),
-                "beta_true": self.beta, "covariance": self.covariance}
-
+         """Return Design matrix and variables from the regression model."""
 
 class NormalDGP(RegressionDGP):
-    def errors(self, rng):
-        return rng.normal(size=self.n)
+    def generate(self, rng):
+        X = rng.normal(size=(self.n, self.p)) 
+        return {"X": X, "y": X @ self.beta + rng.normal(self.n),
+                "beta_true": self.beta}
 
-
-class LaplaceDGP(RegressionDGP):
-    def errors(self, rng):
-        return rng.laplace(scale=1 / np.sqrt(2), size=self.n)
-
-
-DGP_CLASSES = {"normal": NormalDGP, "laplace": LaplaceDGP}
+DGP_CLASSES = {"normal": NormalDGP}
