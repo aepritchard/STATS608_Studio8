@@ -17,7 +17,7 @@ class RegressionDGP(ABC):
 
     def __init__(self, n, gamma, r2):
         self.n,  self.r2 = n, r2
-        self.p = np.ceil(gamma*n)
+        self.p = int(gamma*n)
         self.beta = np.sqrt(r2/self.p)*np.ones(self.p)
            
     @abstractmethod
