@@ -15,7 +15,7 @@ import sklearn
 from threadpoolctl import threadpool_limits
 
 from .dgps import DGP_CLASSES
-from .methods import LAD, OLS
+from .methods import Ridgeless
 from .metrics import evaluate
 
 
@@ -75,7 +75,7 @@ class SimulationStudy:
                  out_dir="results/raw", methods=None):
         self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
         self.out_dir = Path(out_dir)
-        self.methods = [OLS(), LAD()] if methods is None else methods
+        self.methods = [Ridgeless()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
                  root / "scenarios.py", root / "simulate.py"]
