@@ -12,11 +12,8 @@ all:
 simulate:
 	$(PYTHON) simulate.py --reps $(REPS) --seed $(SEED)
 
-analyze:
-	$(PYTHON) analyze.py --stage analyze
-
 figures:
-	$(PYTHON) analyze.py --stage figures
+	$(PYTHON) analyze_results.py
 
 test:
 	$(PYTHON) -m pytest -q
