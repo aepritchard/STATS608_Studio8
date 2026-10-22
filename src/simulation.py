@@ -109,7 +109,7 @@ class SimulationStudy:
             return saved
         dgp = DGP_CLASSES[settings["error_distribution"]](
             settings["n"], settings["gamma"], settings["r2"])
-        estimates = np.full((self.n_reps, len(self.methods), settings["p"]), np.nan)
+        estimates = np.full((settings['nsim'], len(self.methods), settings["gamma"]), np.nan)
         rows = []
 
         for rep in range(settings['nsim']):
@@ -129,7 +129,7 @@ class SimulationStudy:
                 if message:
                     logging.warning("%s rep=%s %s: %s", scenario_id, rep, method.name, message)
                 rows.append({"study_id": self.study_id, "scenario_id": scenario_id,
-                             **settings, "gamma": settings["p"] / settings["n"],
+                             **settings,
                              "rep": rep, "method": method.name,
                              **evaluate(estimates[rep, j], data), "status": status,
                              "message": message, "elapsed_seconds": perf_counter() - start})
@@ -137,7 +137,6 @@ class SimulationStudy:
         temporary = numeric.with_suffix(".npz.tmp")
         with temporary.open("wb") as stream:
             np.savez_compressed(stream, estimates=estimates, beta_true=dgp.beta,
-                                covariance=dgp.covariance,
                                 method_ids=np.array([m.name for m in self.methods]))
         temporary.replace(numeric)
         frame = pd.DataFrame(rows)
