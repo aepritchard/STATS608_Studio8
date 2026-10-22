@@ -71,7 +71,7 @@ class SimulationStudy:
     completed batches. An interruption during a scenario repeats that batch.
     """
 
-    def __init__(self, scenarios, n_reps=100, seed=20261015,
+    def __init__(self, scenarios,  seed=20261015,
                  out_dir="results/raw", methods=None):
         self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
         self.out_dir = Path(out_dir)
@@ -108,11 +108,12 @@ class SimulationStudy:
             saved["message"] = saved.message.fillna("")
             return saved
         dgp = DGP_CLASSES[settings["error_distribution"]](
-            settings["n"], settings["p"], settings["rho"])
+            settings["n"], settings["gamma"], settings["r2"])
         estimates = np.full((self.n_reps, len(self.methods), settings["p"]), np.nan)
         rows = []
-        for rep in range(self.n_reps):
-            data = dgp.generate(rng_for(self.seed, scenario_id, rep, "data"))
+
+        for rep in range(settings['nsim']):
+            data = dgp.generate(rng_for(self.seed, scenario_id, rep, "data"), )
             for j, method in enumerate(self.methods):
                 start = perf_counter()
                 status, message = "ok", ""
