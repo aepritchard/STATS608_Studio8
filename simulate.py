@@ -15,7 +15,7 @@ def main():
     parser.add_argument("--out", type=Path, default=Path("results/raw"))
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    study = SimulationStudy(make_scenarios(), n_reps=args.reps,
+    study = SimulationStudy(make_scenarios(), 
                             seed=args.seed, out_dir=args.out)
     results = study.run()
     logging.info("Saved %s rows (%s) to %s", len(results), study.study_id, args.out)
