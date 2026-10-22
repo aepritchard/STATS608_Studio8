@@ -73,18 +73,18 @@ class SimulationStudy:
 
     def __init__(self, scenarios,  seed=20261015,
                  out_dir="results/raw", methods=None):
-        self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
+        self.scenarios, self.seed = scenarios, seed
         self.out_dir = Path(out_dir)
         self.methods = [Ridgeless()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
                  root / "scenarios.py", root / "simulate.py"]
         self.config = {
-            "scenarios": scenarios, "n_reps": n_reps, "seed": seed,
+            "scenarios": scenarios, "seed": seed,
             "methods": [{"method": m.name, "class": type(m).__name__,
                          "settings": m.settings} for m in self.methods],
-            "model": {"beta": "ones(p)/sqrt(p)", "covariance": "rho**abs(j-k)",
-                      "normal_errors": "N(0,1)", "laplace_scale": 1 / np.sqrt(2)},
+            "model": {"beta": "ones(p)*sqrt(r2 / p)", 
+                      "normal_errors": "N(0,1)"},
             "rng": {"generator": "PCG64", "seed_sequence": "[seed, *SHA256_words]",
                     "label": "compact JSON [scenario_id, rep, task]",
                     "hash_words": "first 16 SHA256 bytes as 4 little-endian uint32",
