@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from sklearn.linear_model import LinearRegression, QuantileRegressor
+from sklearn.linear_model import LinearRegression, QuantileRegressor, 
 
 
 class Method(ABC):
@@ -33,3 +33,9 @@ class LAD(Method):
 
     def fit(self, data, rng):
         return QuantileRegressor(**self.settings).fit(data["X"], data["y"]).coef_
+
+class Ridgeless(Method):
+    name = "Ridgeless"
+    settings = {"fit_intercept": False}
+    def fit(self, data, rng):
+        return LinearRegression(**self.settings).fit(data["X"], data["y"]).coef_
