@@ -40,14 +40,14 @@ def make_figure_subplot(n_sim, ax):
         fit_below_one = lowess(mse_hat[data_below_one], gamma[data_below_one], frac=0.1, it=0)
         ax.plot(fit_below_one[:, 0], fit_below_one[:, 1], 
                 color=point_color, linestyle="--",
-                linewidth=2, label="LOWESS")
+                linewidth=2)
 
         # For gamma in [1,10]
         data_above_one = (gamma > 1) & (gamma <= 10)
         fit_above_one = lowess(mse_hat[data_above_one], gamma[data_above_one], frac=0.1, it=0)
         ax.plot(fit_above_one[:, 0], fit_above_one[:, 1], 
                 color=point_color, linestyle="--",
-                linewidth=2, label="LOWESS")
+                linewidth=2)
 
     else:
         # Plot the points in the scatterplot w/ error bars 2x standard error
