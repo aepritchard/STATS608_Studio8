@@ -8,12 +8,12 @@ with open('results/your_file.pkl', 'rb') as file:
     data = pickle.load(file)
 
 def theoretical_risk(gamma, r2=5):
-    if gamma < 1:
-        return (gamma / (1-gamma))
-    elif gamma > 1:
-        return (r2(1- (1/gamma)) + 1/(gamma-1))
-    else:
-        raise ValueError(rf"gamma must be a number not equal to 1, recieved {gamma}")
+    gamma = np.asarray(gamma, dtype=float)
+    if np.any(gamma == 1):
+        raise ValueError("gamma must not equal 1")
+    risk_below_one = gamma / (1 - gamma)
+    risk_above_one = r2 * (1 - 1 / gamma) + 1 / (gamma - 1)
+    return np.where(gamma < 1, risk_below_one, risk_above_one)
 
 def make_figure_subplot(n_sim, ax):
     # Get data for n_sim
@@ -29,7 +29,7 @@ def make_figure_subplot(n_sim, ax):
         alpha = 0.5
         markersize = 10
 
-        ax.plot(gamma, mse_hat, linsetyle="none", marker="o",
+        ax.plot(gamma, mse_hat, linestyle="none", marker="o",
                 alpha = alpha, markersize = markersize)
         # Run non parametric regression (e.g. LOWESS w/ frac =0.1 and it=0)
         # For gamma in [0.1, 1]
@@ -40,7 +40,7 @@ def make_figure_subplot(n_sim, ax):
         # For gamma in [1,10]
         data_above_one = (gamma > 1) & (gamma <= 10)
         fit_above_one = lowess(mse_hat[data_above_one], gamma[data_above_one], frac=0.1, it=0)
-        ax.plot(fit_above_one[:, 0], fit_below_one[:, 1], color="red", label="LOWESS")
+        ax.plot(fit_above_one[:, 0], fit_above_one[:, 1], color="red", label="LOWESS")
 
     else:
         # Plot the points in the scatterplot w/ error bars 2x standard error
@@ -48,7 +48,7 @@ def make_figure_subplot(n_sim, ax):
                     alpha=alpha, markersize=markersize, capsize=2)
 
     # Plot vertical asymptote at one
-    ax.vline(1, color="gray", linestyle="---")
+    ax.axvline(1, color="gray", linestyle="--")
     
     # Plot theoretical risk curve
     gamma_grid_below_one = np.linspace(0.1, 0.999, 500)

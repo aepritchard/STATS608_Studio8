@@ -27,7 +27,7 @@ class RegressionDGP(ABC):
 class NormalDGP(RegressionDGP):
     def generate(self, rng):
         X = rng.normal(size=(self.n, self.p)) 
-        return {"X": X, "y": X @ self.beta + rng.normal(self.n),
+        return {"X": X, "y": X @ self.beta + rng.normal(size=self.n),
                 "beta_true": self.beta}
 
 DGP_CLASSES = {"normal": NormalDGP}

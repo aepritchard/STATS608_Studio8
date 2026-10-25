@@ -109,7 +109,7 @@ class SimulationStudy:
             return saved
         dgp = DGP_CLASSES[settings["error_distribution"]](
             settings["n"], settings["gamma"], settings["r2"])
-        estimates = np.full((settings['nsim'], len(self.methods), settings["gamma"]), np.nan)
+        estimates = np.full((settings['nsim'], len(self.methods), dgp.p), np.nan)
         rows = []
 
         for rep in range(settings['nsim']):
@@ -141,7 +141,7 @@ class SimulationStudy:
         temporary.replace(numeric)
         frame = pd.DataFrame(rows)
         save_csv(frame, checkpoint)
-        logging.info("Completed %s (%s replicates)", scenario_id, self.n_reps)
+        logging.info("Completed %s (%s replicates)", scenario_id, settings["nsim"])
         return frame
 
     def run(self):
@@ -154,7 +154,7 @@ class SimulationStudy:
         results = pd.concat(frames, ignore_index=True)
         save_csv(results, self.study_dir / "runs.csv")
         save_csv(results, self.out_dir / "runs.csv")
-        design = pd.DataFrame([{"scenario_id": sid, **s, "gamma": s["p"] / s["n"]}
+        design = pd.DataFrame([{"scenario_id": sid, **s}
                                for sid, s in self.scenarios.items()])
         save_csv(design, self.out_dir / "design.csv")
         save_json(metadata, self.out_dir / "metadata.json")
