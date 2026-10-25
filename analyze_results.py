@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+from pathlib import Path
 import matplotlib.pyplot as plt
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
@@ -22,12 +23,14 @@ def make_figure_subplot(n_sim, ax):
     mse_hat = data_for_n_sim["mse_hat"].to_numpy()
     se_mse = data_for_n_sim["se_mse"].to_numpy()
 
+    point_color = "slateblue"
+
     # Change transparency and markersize for n_sim = 1
     alpha = 1
-    markersize = 12
+    markersize = 5
     if n_sim == 1:
-        alpha = 0.5
-        markersize = 10
+        alpha = 0.25
+        markersize = 2
 
         ax.plot(gamma, mse_hat, linestyle="none", marker="o",
                 alpha = alpha, markersize = markersize)
@@ -35,17 +38,21 @@ def make_figure_subplot(n_sim, ax):
         # For gamma in [0.1, 1]
         data_below_one = (gamma >= 0.1) & (gamma < 1)
         fit_below_one = lowess(mse_hat[data_below_one], gamma[data_below_one], frac=0.1, it=0)
-        ax.plot(fit_below_one[:, 0], fit_below_one[:, 1], color="blue", label="LOWESS")
+        ax.plot(fit_below_one[:, 0], fit_below_one[:, 1], 
+                color=point_color, linestyle="--",
+                linewidth=2, label="LOWESS")
 
         # For gamma in [1,10]
         data_above_one = (gamma > 1) & (gamma <= 10)
         fit_above_one = lowess(mse_hat[data_above_one], gamma[data_above_one], frac=0.1, it=0)
-        ax.plot(fit_above_one[:, 0], fit_above_one[:, 1], color="red", label="LOWESS")
+        ax.plot(fit_above_one[:, 0], fit_above_one[:, 1], 
+                color=point_color, linestyle="--",
+                linewidth=2, label="LOWESS")
 
     else:
         # Plot the points in the scatterplot w/ error bars 2x standard error
         ax.errorbar(gamma, mse_hat, yerr=2 * se_mse, linestyle="none", marker="o",
-                    alpha=alpha, markersize=markersize, capsize=2)
+                    alpha=alpha, markersize=markersize, capsize=1.5, elinewidth=1)
 
     # Plot vertical asymptote at one
     ax.axvline(1, color="gray", linestyle="--")
@@ -63,13 +70,16 @@ def make_figure_subplot(n_sim, ax):
     ax.set_xlim(0.1, 10)
     ax.set_title(f"n_sim = {n_sim}")
     ax.set_xlabel("gamma")
-    ax.set_ylabel("Estimated risk")
+    ax.set_ylabel("MSE")
+    ax.set_ylim(0, 10)
     ax.legend()
 
 # Make figure
-plt.savefig("figure.pdf", bbox_inches='tight')
-
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 for ax, n_sim in zip(axes, [1, 50, 1000]):
     make_figure_subplot(n_sim, ax)
 fig.tight_layout()
+
+figure_dir = Path("Figures")
+figure_dir.mkdir(parents=True, exist_ok=True)
+fig.savefig(figure_dir / "figure.pdf", bbox_inches='tight')
