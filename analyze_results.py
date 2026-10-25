@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 # Open the file in binary read mode ('rb')
-with open('results/your_file.pkl', 'rb') as file:
+with open('results/summary.pkl', 'rb') as file:
     data = pickle.load(file)
 
 def theoretical_risk(gamma, r2=5):

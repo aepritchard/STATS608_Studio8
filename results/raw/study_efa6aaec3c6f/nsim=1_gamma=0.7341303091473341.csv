@@ -1,0 +1,2 @@
+study_id,scenario_id,nsim,n,r2,gamma,error_distribution,rep,method,coefficient_l1,coefficient_error,status,message,elapsed_seconds
+study_efa6aaec3c6f,nsim=1_gamma=0.7341303091473341,1,200,5,0.7341303091473341,normal,0,Ridgeless,17.50511747641236,3.4591169843567546,ok,,0.001505165986600332
